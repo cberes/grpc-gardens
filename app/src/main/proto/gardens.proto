@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+package com.spinthechoice.grpc;
+
+service Gardens {
+    rpc addPlant(Plant) returns (google.protobuf.StringValue);
+    rpc getPlant(google.protobuf.StringValue) returns (Plant);
+    rpc getPlantsInGarden(google.protobuf.StringValue) returns (stream Plant);
+}
+
+enum LightPreference {
+    SHADE = 0;
+    PARTIAL = 1;
+    FULL = 2;
+}
+
+enum MoisturePreference {
+    DRY = 0;
+    MEDIUM_DRY = 1;
+    MEDIUM = 2;
+    MEDIUM_WET = 4;
+    WET = 5;
+}
+
+message Plant {
+    string id = 1;
+    string species = 2;
+    string garden = 3;
+    MoisturePreference moisture = 4;
+    LightPreference light = 5;
+    int64 planted = 6;
+}
+
