@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,6 +34,7 @@ class GardensTest {
             assertEquals(GardensOuterClass.LightPreference.FULL, coneflower.getLight());
             assertEquals(GardensOuterClass.MoisturePreference.MEDIUM, coneflower.getMoisture());
             assertNotEquals(0L, coneflower.getPlanted());
+            assertEquals(0, coneflower.getWaterLevel());
 
             client.addPlant(GardensOuterClass.Plant.newBuilder()
                     .setSpecies("Early Sunflower")
@@ -56,6 +58,15 @@ class GardensTest {
                     .collect(toSet());
             assertTrue(names.contains("Purple Coneflower"));
             assertTrue(names.contains("Wild Bergamot"));
+
+            final String waterResponse = client.water(frontPlants.stream()
+                    .map(GardensOuterClass.Plant::getId)
+                    .collect(toList()));
+            assertEquals("Watered 2 plants", waterResponse);
+
+            final GardensOuterClass.Plant watered = client.getPlant(coneflowerId);
+            assertNotNull(watered);
+            assertEquals(1, watered.getWaterLevel());
         }
     }
 }

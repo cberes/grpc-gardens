@@ -8,6 +8,7 @@ service Gardens {
     rpc addPlant(Plant) returns (google.protobuf.StringValue);
     rpc getPlant(google.protobuf.StringValue) returns (Plant);
     rpc getPlantsInGarden(google.protobuf.StringValue) returns (stream Plant);
+    rpc water(stream google.protobuf.StringValue) returns (google.protobuf.StringValue);
 }
 
 enum LightPreference {
@@ -31,5 +32,6 @@ message Plant {
     MoisturePreference moisture = 4;
     LightPreference light = 5;
     int64 planted = 6;
+    sint32 waterLevel = 7;
 }
 

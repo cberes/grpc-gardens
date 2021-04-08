@@ -5,6 +5,7 @@ import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.protobuf.StringValue;
 import io.grpc.Status;
@@ -49,5 +50,35 @@ public class GardensImpl extends GardensGrpc.GardensImplBase {
                 .filter(plant -> garden.equals(plant.getGarden()))
                 .forEach(responseObserver::onNext);
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public StreamObserver<StringValue> water(final StreamObserver<StringValue> responseObserver) {
+        final AtomicInteger count = new AtomicInteger(0);
+        return new StreamObserver<>() {
+            @Override
+            public void onNext(final StringValue value) {
+                final String id = value.getValue();
+                if (plants.containsKey(id)) {
+                    final GardensOuterClass.Plant plant = plants.get(id);
+                    plants.put(plant.getId(), plant.toBuilder()
+                            .setWaterLevel(plant.getWaterLevel() + 1) // TODO periodically decrease water level
+                            .build());
+                    count.incrementAndGet();
+                }
+            }
+
+            @Override
+            public void onError(final Throwable t) {
+                t.printStackTrace();
+            }
+
+            @Override
+            public void onCompleted() {
+                final StringValue response = StringValue.newBuilder().setValue("Watered " + count.get() + " plants").build();
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+            }
+        };
     }
 }
