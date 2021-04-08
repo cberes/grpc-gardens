@@ -23,7 +23,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'com.spinthechoice.grpc.ProductInfoServer'
+    mainClass = 'com.spinthechoice.grpc.GardensServer'
 }
 
 tasks.named('test') {
